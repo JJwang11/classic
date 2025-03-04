@@ -62,11 +62,6 @@ func (hunter *Hunter) ApplyTalents() {
 
 	if hunter.Talents.LethalShots > 0 {
 		lethalBonus := 1 * float64(hunter.Talents.LethalShots) * core.CritRatingPerCritChance
-		for _, spell := range hunter.Shots {
-			if spell != nil {
-				spell.BonusCritRating += lethalBonus
-			}
-		}
 		hunter.OnSpellRegistered(func(spell *core.Spell) {
 			if spell.Flags.Matches(SpellFlagShot) {
 				spell.BonusCritRating += lethalBonus
