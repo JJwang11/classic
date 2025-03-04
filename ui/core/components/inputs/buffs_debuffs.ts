@@ -285,6 +285,13 @@ export const BattleSquawkBuff = makeMultistateRaidBuffInput({
 	fieldName: 'battleSquawk',
 });
 
+export const FuriousHowlBuff = makeMultistateRaidBuffInput({
+	actionId: () => ActionId.fromSpellId(24597),
+	numStates: 2,
+	fieldName: 'furiousHowl',
+});
+
+
 ///////////////////////////////////////////////////////////////////////////
 //                                 WORLD BUFFS
 ///////////////////////////////////////////////////////////////////////////
@@ -677,6 +684,11 @@ export const MISC_BUFFS_CONFIG = [
 		config: BattleSquawkBuff,
 		picker: IconPicker,
 		stats: [Stat.StatMeleeHit],
+	},
+	{
+		config: FuriousHowlBuff,
+		picker: IconPicker,
+		stats: [Stat.StatAttackPower],
 	},
 ] as PickerStatOptions[];
 

@@ -49,7 +49,7 @@ func (hunter *Hunter) ApplyTalents() {
 			Label: "Bestial Discipline",
 			OnInit: func(aura *core.Aura, sim *core.Simulation) {
 				if hunter.pet != nil {
-					hunter.pet.AddFocusRegenMultiplier(0.1*float64(hunter.Talents.BestialDiscipline))
+					hunter.pet.AddFocusRegenMultiplier(0.1 * float64(hunter.Talents.BestialDiscipline))
 				}
 			},
 		}))
@@ -61,12 +61,17 @@ func (hunter *Hunter) ApplyTalents() {
 	hunter.AddStat(stats.MeleeCrit, float64(hunter.Talents.KillerInstinct)*1*core.CritRatingPerCritChance)
 
 	if hunter.Talents.LethalShots > 0 {
-		lethalBonus := 1*float64(hunter.Talents.LethalShots)*core.CritRatingPerCritChance
+		lethalBonus := 1 * float64(hunter.Talents.LethalShots) * core.CritRatingPerCritChance
 		for _, spell := range hunter.Shots {
 			if spell != nil {
 				spell.BonusCritRating += lethalBonus
 			}
 		}
+		hunter.OnSpellRegistered(func(spell *core.Spell) {
+			if spell.Flags.Matches(SpellFlagShot) {
+				spell.BonusCritRating += lethalBonus
+			}
+		})
 		hunter.AutoAttacks.RangedConfig().BonusCritRating += lethalBonus
 	}
 

@@ -30,6 +30,7 @@ const (
 	Windfury
 	SanctityAura
 	BattleSquawk
+	FuriousHowl
 
 	// Resistance
 	AspectOfTheWild
@@ -395,6 +396,10 @@ func applyBuffEffects(agent Agent, playerFaction proto.Faction, raidBuffs *proto
 	if raidBuffs.BattleSquawk > 0 {
 		numBattleSquawks := raidBuffs.BattleSquawk
 		BattleSquawkAura(&character.Unit, numBattleSquawks)
+	}
+
+	if raidBuffs.FuriousHowl {
+		MakePermanent(FuriousHowlAura(&character.Unit))
 	}
 
 	// World Buffs
@@ -1500,6 +1505,29 @@ func BattleSquawkAura(character *Unit, stackcount int32) *Aura {
 		},
 		OnExpire: func(aura *Aura, sim *Simulation) {
 			aura.SetStacks(sim, 0)
+		},
+	})
+	return aura
+}
+
+func FuriousHowlAura(character *Unit) *Aura {
+	aura := character.GetOrRegisterAura(Aura{
+		Label:      "Furious Howl",
+		ActionID:   ActionID{SpellID: 24597},
+		Duration:   time.Second * 10,
+		MaxStacks:  1,
+		BuildPhase: CharacterBuildPhaseBuffs,
+		OnGain: func(aura *Aura, sim *Simulation) {
+			character.PseudoStats.BonusPhysicalDamage += 51.0
+		},
+		OnExpire: func(aura *Aura, sim *Simulation) {
+			character.PseudoStats.BonusPhysicalDamage -= 51.0
+		},
+		OnSpellHitDealt: func(aura *Aura, sim *Simulation, spell *Spell, result *SpellResult) {
+			if !result.Landed() || !spell.SpellSchool.Matches(SpellSchoolPhysical) {
+				return
+			}
+			aura.RemoveStack(sim)
 		},
 	})
 	return aura
